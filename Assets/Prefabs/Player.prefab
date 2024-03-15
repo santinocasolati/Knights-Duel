@@ -33,7 +33,7 @@ Transform:
   m_Children:
   - {fileID: 8368036071438443198}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!143 &5756812004205898380
 CharacterController:
@@ -106,7 +106,7 @@ MonoBehaviour:
     Position: {x: 0, y: 1, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 1}
     LocalScale: {x: 1, y: 1, z: 1}
-  _isNetworked: 0
+  _isNetworked: 1
   _isGlobal: 0
   _initializeOrder: 0
   _defaultDespawnType: 0

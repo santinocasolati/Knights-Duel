@@ -24,11 +24,12 @@ public class PlayerController : NetworkBehaviour
     private void Start()
     {
         characterController = GetComponent<CharacterController>();
+    }
 
+    public override void OnStartClient()
+    {
+        gameObject.name = "Player [" + base.OwnerId + "]";
         SetCamera();
-
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
     }
 
     private void SetCamera()
@@ -37,14 +38,16 @@ public class PlayerController : NetworkBehaviour
         // The Camera is instantiated to not cause problems with two virtual cameras for a few frames
         // Using Cinemachine to improve camera effects
 
-        //if (base.IsOwner)
-        //{
+        if (base.IsOwner)
+        {
             GameObject camera = Instantiate(cameraPrefab, transform);
             playerCamera = camera.transform.Find("Target");
-        //} else
-        //{
-        //    Destroy(this);
-        //}
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        } else
+        {
+            Destroy(this);
+        }
     }
 
     private void Update()
