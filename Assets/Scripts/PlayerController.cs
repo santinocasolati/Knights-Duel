@@ -2,6 +2,7 @@ using FishNet.Object;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -15,6 +16,10 @@ public class PlayerController : NetworkBehaviour
     public float lookSpeed = 2f;
     public float lookLimitX = 25f;
     public GameObject cameraPrefab;
+
+    // Using Events and a separate class to divide the responsabilities of each class
+    public UnityEvent<Vector2> OnMovementChanged;
+    public UnityEvent OnJumpPerformed;
 
     private Transform playerCamera;
     private CharacterController characterController;
@@ -64,8 +69,13 @@ public class PlayerController : NetworkBehaviour
         Vector3 playerForward = transform.TransformDirection(Vector3.forward);
         Vector3 playerRight = transform.TransformDirection(Vector3.right);
 
-        float moveSpeedVertical = canMove ? moveSpeed * Input.GetAxis("Vertical") : 0;
-        float moveSpeedHorizontal = canMove ? moveSpeed * Input.GetAxis("Horizontal") : 0;
+        float verticalAxis = canMove ? Input.GetAxis("Vertical") : 0;
+        float horizontalAxis = canMove ? Input.GetAxis("Horizontal") : 0;
+
+        OnMovementChanged?.Invoke(new(horizontalAxis, verticalAxis));
+
+        float moveSpeedVertical = moveSpeed * verticalAxis;
+        float moveSpeedHorizontal = moveSpeed * horizontalAxis;
 
         float currentDirectionY = moveDirection.y;
         moveDirection = playerForward * moveSpeedVertical + playerRight * moveSpeedHorizontal;
@@ -74,6 +84,7 @@ public class PlayerController : NetworkBehaviour
         {
             // Applying the jump as move direction instead of force so it can interacts with custom gravity of the CharacterController
             moveDirection.y = jumpSpeed;
+            OnJumpPerformed?.Invoke();
         } else
         {
             moveDirection.y = currentDirectionY;
