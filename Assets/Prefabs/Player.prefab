@@ -83,6 +83,7 @@ MonoBehaviour:
   lookSpeed: 2
   lookLimitX: 25
   cameraPrefab: {fileID: 6052518306742741231, guid: f088149f77519314bb10792493e26f4f, type: 3}
+  hpBarPrefab: {fileID: 432665022293748292, guid: 8f029dc5aaf8a764c8d728124295e349, type: 3}
   OnMovementChanged:
     m_PersistentCalls:
       m_Calls:

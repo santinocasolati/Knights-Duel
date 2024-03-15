@@ -15,9 +15,13 @@ public class PlayerController : NetworkBehaviour
     [Header("Camera Settings")]
     public float lookSpeed = 2f;
     public float lookLimitX = 25f;
+
+    [Header("Prefabs")]
     public GameObject cameraPrefab;
+    public GameObject hpBarPrefab;
 
     // Using Events and a separate class to divide the responsabilities of each class
+    [Header("Events")]
     public UnityEvent<Vector2> OnMovementChanged;
     public UnityEvent OnJumpPerformed;
 
@@ -51,6 +55,7 @@ public class PlayerController : NetworkBehaviour
             Cursor.visible = false;
         } else
         {
+            Instantiate(hpBarPrefab, transform);
             Destroy(this);
         }
     }
