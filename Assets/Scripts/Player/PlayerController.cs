@@ -24,6 +24,7 @@ public class PlayerController : NetworkBehaviour
     [Header("Events")]
     public UnityEvent<Vector2> OnMovementChanged;
     public UnityEvent OnJumpPerformed;
+    public UnityEvent OnAttackPerformed;
 
     private Transform playerCamera;
     private CharacterController characterController;
@@ -66,6 +67,7 @@ public class PlayerController : NetworkBehaviour
 
         Movement();
         Rotation();
+        Attack();
     }
 
     private void Movement()
@@ -114,5 +116,13 @@ public class PlayerController : NetworkBehaviour
         playerCamera.localRotation = Quaternion.Euler(rotationX, 0, 0);
         
         transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0);
+    }
+
+    private void Attack()
+    {
+        if (Input.GetButton("Fire"))
+        {
+            OnAttackPerformed?.Invoke();
+        }
     }
 }

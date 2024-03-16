@@ -21,4 +21,10 @@ public class PlayerAnimationsController : MonoBehaviour
     {
         animator.SetTrigger("Jump");
     }
+
+    public void PerformAttack()
+    {
+        if (animator.GetCurrentAnimatorStateInfo(1).IsName("Attack")) return;
+        animator.SetTrigger("Attack");
+    }
 }
