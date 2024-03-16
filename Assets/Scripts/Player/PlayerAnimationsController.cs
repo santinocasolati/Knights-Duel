@@ -10,6 +10,7 @@ public class PlayerAnimationsController : NetworkBehaviour
     [Header("Sword Settings")]
     [SerializeField] private Collider swordCollider;
     [SerializeField] private SwordController swordController;
+    [SerializeField] private AnimationClip attackAnimation;
 
     private Animator animator;
     private NetworkAnimator networkAnimator;
@@ -37,19 +38,23 @@ public class PlayerAnimationsController : NetworkBehaviour
         networkAnimator.SetTrigger("Jump");
     }
 
-    public void SetAttackState(bool state)
+    public void ResetAttackState()
     {
-        // Called from animation state events
-        isAttacking = state;
-        swordCollider.enabled = state;
+        isAttacking = false;
+        swordCollider.enabled = false;
     }
 
     public void PerformAttack()
     {
         // If the trigger is setted when its on the attack state the animation performs twice
         if (isAttacking) return;
+        isAttacking = true;
+        swordCollider.enabled = true;
         swordController.ResetAttack();
         networkAnimator.SetTrigger("Attack");
+
+        Invoke(nameof(ResetAttackState), attackAnimation.length);
+
         AttackServer();
     }
 
