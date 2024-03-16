@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,13 @@ public class PlayerHealthController : MonoBehaviour
     private void Start()
     {
         currentHP = maxHP;
+        OnPlayerKilled.AddListener(PlayerDeathHandler);
+    }
+
+    private void PlayerDeathHandler()
+    {
+        // Prevent damage to death player. Gameobject is not destroyed to perform a death animation
+        this.enabled = false;
     }
 
     public void Damage(int damage)
