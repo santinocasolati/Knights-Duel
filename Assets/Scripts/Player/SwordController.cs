@@ -30,7 +30,7 @@ public class SwordController : NetworkBehaviour
 
         if (phc == null) return;
 
-        phc.Damage(damage);
+        phc.Damage(damage, base.OwnerId);
 
         playerHitted = true;
     }

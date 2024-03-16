@@ -19,6 +19,11 @@ public class PlayerHealthController : NetworkBehaviour
 
     public override void OnStartNetwork()
     {
+        ResetHp();
+    }
+
+    public void ResetHp()
+    {
         currentHP = maxHP;
     }
 
@@ -27,30 +32,31 @@ public class PlayerHealthController : NetworkBehaviour
         OnPlayerHealthModified?.Invoke(currentHP);
     }
 
-    public void Damage(int damage)
+    public void Damage(int damage, int attackerId)
     {
         // Prevent the player of damaging himself or be damaged while is not started
         if (base.IsOwner || !base.OnStartClientCalled) return;
-        DamageServer(damage);
+        DamageServer(damage, attackerId);
     }
 
     // The player that damages the other sends a signal to the server to update the hp
     // The server sends a signal to the players to perform operations
     [ServerRpc(RequireOwnership = false)]
-    private void DamageServer(int damage)
+    private void DamageServer(int damage, int attackerId)
     {
         currentHP -= damage;
-        DamageObserver(currentHP);
+        DamageObserver(currentHP, attackerId);
     }
 
     [ObserversRpc]
-    private void DamageObserver(int hp)
+    private void DamageObserver(int hp, int attackerId)
     {
         if (!base.IsOwner) return;
 
         if (hp == 0)
         {
             OnPlayerKilled?.Invoke();
+            PlayerManager.PlayerDied(base.OwnerId, attackerId);
         }
         else
         {

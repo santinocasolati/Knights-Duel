@@ -98,20 +98,19 @@ public class PlayerAnimationsController : NetworkBehaviour
 
     public void PlayerKilled()
     {
-        networkAnimator.SetTrigger("Death");
-        PlayerKilledServer();
+        PlayerKilledServer(base.OwnerId);
     }
 
     [ServerRpc]
-    private void PlayerKilledServer()
+    private void PlayerKilledServer(int id)
     {
-        PlayerKilledObserver();
+        PlayerKilledObserver(id);
     }
 
     [ObserversRpc]
-    private void PlayerKilledObserver()
+    private void PlayerKilledObserver(int id)
     {
         AudioManager.instance.PlaySound("death");
-        GetComponentInParent<PlayerController>().Terminate();
+        PlayerController.TogglePlayer(id, false);
     }
 }

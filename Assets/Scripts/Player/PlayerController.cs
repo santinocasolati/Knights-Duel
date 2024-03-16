@@ -1,3 +1,4 @@
+using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Prediction;
 using FishNet.Transporting;
@@ -36,6 +37,8 @@ public struct ReconcileDataPlayerController : IReconcileData
 
 public class PlayerController : NetworkBehaviour
 {
+    public static Dictionary<int, PlayerController> Players = new();
+
     [Header("Movement Settings")]
     public float moveSpeed = 8f;
     public float jumpSpeed = 4f;
@@ -55,11 +58,13 @@ public class PlayerController : NetworkBehaviour
     public UnityEvent<Vector2> OnMovementChanged;
     public UnityEvent OnJumpPerformed;
     public UnityEvent OnAttackPerformed;
+    public UnityEvent OnPlayerRespawn;
 
     private Transform playerCamera;
     private CharacterController characterController;
     private Vector3 moveDirection = Vector3.zero;
     private float rotationX = 0f;
+    private GameObject hpBar;
 
     // Since this values must be getted by button or button down, I'm caching them for the next tick
     private bool _jumpQueued;
@@ -74,22 +79,87 @@ public class PlayerController : NetworkBehaviour
     public override void OnStartNetwork()
     {
         base.OnStartNetwork();
-        gameObject.name = "Player [" + base.OwnerId + "]";
-        SetCamera();
         base.TimeManager.OnTick += TimeManager_OnTick;
     }
 
     public override void OnStopNetwork()
     {
         base.OnStopNetwork();
+
+        Players.Remove(OwnerId);
+
         if (base.TimeManager != null)
             base.TimeManager.OnTick -= TimeManager_OnTick;
     }
 
-    public void Terminate()
+    public override void OnStartClient()
     {
-        OnStopNetwork();
-        Destroy(this);
+        base.OnStartClient();
+
+        gameObject.name = "Player [" + base.OwnerId + "]";
+        Players.Add(OwnerId, this);
+        PlayerManager.InitializeNewPlayer(base.OwnerId);
+        SetPlayer();
+    }
+
+    public override void OnStopClient()
+    {
+        base.OnStopClient();
+        Players.Remove(OwnerId);
+        PlayerManager.DeletePlayer(base.OwnerId);
+    }
+
+
+    public static void TogglePlayer(int clientId, bool toggle)
+    {
+        if (!Players.TryGetValue(clientId, out PlayerController player)) return;
+
+        player.TogglePlayerServer(toggle);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void TogglePlayerServer(bool toggle)
+    {
+        TogglePlayerObserver(toggle);
+    }
+
+    [ObserversRpc]
+    private void TogglePlayerObserver(bool toggle)
+    {
+        canMove = toggle;
+
+        if (TryGetComponent(out CapsuleCollider collider)) collider.enabled = toggle;
+
+        Renderer[] allRenderers = GetComponentsInChildren<Renderer>();
+        foreach (Renderer renderer in allRenderers)
+        {
+            renderer.enabled = toggle;
+        }
+
+        if (hpBar != null) hpBar.SetActive(toggle);
+
+        characterController.enabled = toggle;
+    }
+
+    public static void RespawnPlayer(int clientId, Vector3 position)
+    {
+        if (!Players.TryGetValue(clientId, out PlayerController player)) return;
+
+        player.OnPlayerRespawn?.Invoke();
+        player.SetPlayerPositionServer(position);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SetPlayerPositionServer(Vector3 position)
+    {
+        transform.position = position;
+        SetPlayerPositionObserver(position);
+    }
+
+    [ObserversRpc]
+    private void SetPlayerPositionObserver(Vector3 position)
+    {
+        transform.position = position;
     }
 
     private void TimeManager_OnTick()
@@ -134,7 +204,7 @@ public class PlayerController : NetworkBehaviour
         _fireQueued = Input.GetButton("Fire");
     }
 
-    private void SetCamera()
+    private void SetPlayer()
     {
         // If the player is not the owner we don't need neither the Camera nor the PlayerController
         // The Camera is instantiated to not cause problems with two virtual cameras for a few frames
@@ -149,7 +219,7 @@ public class PlayerController : NetworkBehaviour
         }
         else
         {
-            Instantiate(hpBarPrefab, transform);
+            hpBar = Instantiate(hpBarPrefab, transform);
         }
     }
 
@@ -183,26 +253,26 @@ public class PlayerController : NetworkBehaviour
         float moveSpeedVertical = moveSpeed * verticalAxis;
         float moveSpeedHorizontal = moveSpeed * horizontalAxis;
 
-        float currentDirectionY = moveDirection.y;
+        float currentDirectionY = _verticalVelocity;
         moveDirection = playerForward * moveSpeedVertical + playerRight * moveSpeedHorizontal;
 
         if (replicateData.Jump && canMove && characterController.isGrounded)
         {
             // Applying the jump as move direction instead of force so it can interacts with custom gravity of the CharacterController
-            moveDirection.y = jumpSpeed;
+            _verticalVelocity = jumpSpeed;
             OnJumpPerformed?.Invoke();
         }
         else
         {
-            moveDirection.y = currentDirectionY;
+            _verticalVelocity = currentDirectionY;
         }
 
         // The gravity is multiplied by delta time so it increases gradually
-        if (!characterController.isGrounded) moveDirection.y -= gravity * delta;
+        if (!characterController.isGrounded) _verticalVelocity -= gravity * delta;
 
-        // Caching the vertical direction so it can reconcile the jump at the same position
-        _verticalVelocity = moveDirection.y;
+        moveDirection.y = _verticalVelocity;
 
+        if (!canMove) return;
         characterController.Move(moveDirection * delta);
     }
 
