@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7360682979541097898}
   - component: {fileID: 5756812004205898380}
   - component: {fileID: 4949784759613977491}
+  - component: {fileID: 7573296929686030702}
   - component: {fileID: 9026400393973727437}
   m_Layer: 0
   m_Name: Player
@@ -129,6 +130,25 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &7573296929686030702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1587416952866580636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10246641d475511429666ae2451a1b80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHP: 10
+  OnPlayerDamaged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPlayerKilled:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &9026400393973727437
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -24,6 +24,7 @@ public class PlayerAnimationsController : MonoBehaviour
 
     public void PerformAttack()
     {
+        // If the trigger is setted when its on the attack state the animation performs twice
         if (animator.GetCurrentAnimatorStateInfo(1).IsName("Attack")) return;
         animator.SetTrigger("Attack");
     }

@@ -120,6 +120,7 @@ public class PlayerController : NetworkBehaviour
 
     private void Attack()
     {
+        // Using GetButton so players can hold to keep attacking
         if (Input.GetButton("Fire"))
         {
             OnAttackPerformed?.Invoke();
