@@ -30,6 +30,11 @@ public class PlayerHealthController : NetworkBehaviour
     private void UpdateHPBar(int oldHP, int newHP, bool asServer)
     {
         OnPlayerHealthModified?.Invoke(currentHP);
+
+        if (base.IsOwner)
+        {
+            UIHPBarUpdate.HPModified(currentHP);
+        }
     }
 
     public void Damage(int damage, int attackerId)
