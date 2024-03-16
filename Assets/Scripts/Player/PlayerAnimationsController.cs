@@ -41,4 +41,9 @@ public class PlayerAnimationsController : MonoBehaviour
         swordController.ResetAttack();
         animator.SetTrigger("Attack");
     }
+
+    public void PlayerKilled()
+    {
+        animator.SetTrigger("Death");
+    }
 }

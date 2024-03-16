@@ -149,7 +149,19 @@ MonoBehaviour:
       m_Calls: []
   OnPlayerKilled:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7240677109526670410}
+        m_TargetAssemblyTypeName: PlayerAnimationsController, Assembly-CSharp
+        m_MethodName: PlayerKilled
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &9026400393973727437
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -392,3 +404,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d65302d39596fb4d8064cf0ab4b0a77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damage: 1
