@@ -40,14 +40,22 @@ public class PlayerAnimationsController : NetworkBehaviour
 
     public void ResetAttackState()
     {
-        isAttacking = false;
         swordCollider.enabled = false;
+        networkAnimator.ResetTrigger("Attack");
+
+        // A delay is setted so the trigger can go back to it's original value
+        Invoke(nameof(AllowAttack), 0.25f);
+    }
+
+    private void AllowAttack()
+    {
+        isAttacking = false;
     }
 
     public void PerformAttack()
     {
         // If the trigger is setted when its on the attack state the animation performs twice
-        if (isAttacking) return;
+        if (isAttacking || !base.IsOwner) return;
         isAttacking = true;
         swordCollider.enabled = true;
         swordController.ResetAttack();
@@ -104,5 +112,6 @@ public class PlayerAnimationsController : NetworkBehaviour
     private void PlayerKilledObserver()
     {
         AudioManager.instance.PlaySound("death");
+        GetComponentInParent<PlayerController>().Terminate();
     }
 }

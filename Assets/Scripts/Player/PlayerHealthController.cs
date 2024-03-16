@@ -17,12 +17,7 @@ public class PlayerHealthController : NetworkBehaviour
 
     [SyncVar(OnChange = nameof(UpdateHPBar))]private int currentHP;
 
-    private void Start()
-    {
-        OnPlayerKilled.AddListener(PlayerDeathHandler);
-    }
-
-    public override void OnStartClient()
+    public override void OnStartNetwork()
     {
         currentHP = maxHP;
     }
@@ -30,12 +25,6 @@ public class PlayerHealthController : NetworkBehaviour
     private void UpdateHPBar(int oldHP, int newHP, bool asServer)
     {
         OnPlayerHealthModified?.Invoke(currentHP);
-    }
-
-    private void PlayerDeathHandler()
-    {
-        // Prevent damage to dead player. Gameobject is not destroyed to perform a death animation
-        Destroy(this);
     }
 
     public void Damage(int damage)
@@ -48,19 +37,18 @@ public class PlayerHealthController : NetworkBehaviour
     // The player that damages the other sends a signal to the server to update the hp
     // The server sends a signal to the players to perform operations
     [ServerRpc(RequireOwnership = false)]
-    private void DamageServer(int damage, NetworkConnection conn = null)
+    private void DamageServer(int damage)
     {
         currentHP -= damage;
-        DamageObserver();
+        DamageObserver(currentHP);
     }
 
-    // Only the owner calls the events to modify its animations
     [ObserversRpc]
-    private void DamageObserver()
+    private void DamageObserver(int hp)
     {
         if (!base.IsOwner) return;
 
-        if (currentHP <= 0)
+        if (hp == 0)
         {
             OnPlayerKilled?.Invoke();
         }
