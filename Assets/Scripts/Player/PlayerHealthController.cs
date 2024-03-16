@@ -22,7 +22,7 @@ public class PlayerHealthController : MonoBehaviour
     private void PlayerDeathHandler()
     {
         // Prevent damage to death player. Gameobject is not destroyed to perform a death animation
-        this.enabled = false;
+        Destroy(this);
     }
 
     public void Damage(int damage)

@@ -78,6 +78,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 9026400393973727437}
   _networkObjectCache: {fileID: 9026400393973727437}
   moveSpeed: 8
+  stepSpeedThreshold: 3.5
   jumpSpeed: 4
   gravity: 9.81
   canMove: 1
@@ -202,7 +203,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 3
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0

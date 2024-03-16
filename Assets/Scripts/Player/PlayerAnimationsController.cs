@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerAnimationsController : MonoBehaviour
 {
+    [Header("Sword Settings")]
     [SerializeField] private Collider swordCollider;
     [SerializeField] private SwordController swordController;
 
@@ -40,15 +41,18 @@ public class PlayerAnimationsController : MonoBehaviour
         if (isAttacking) return;
         swordController.ResetAttack();
         animator.SetTrigger("Attack");
+        AudioManager.instance.PlaySound("sword");
     }
 
     public void PlayerHitted()
     {
         animator.SetTrigger("Hit");
+        AudioManager.instance.PlaySound("hit");
     }
 
     public void PlayerKilled()
     {
         animator.SetTrigger("Death");
+        AudioManager.instance.PlaySound("death");
     }
 }
