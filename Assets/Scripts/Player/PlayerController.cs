@@ -145,7 +145,6 @@ public class PlayerController : NetworkBehaviour
     {
         if (!Players.TryGetValue(clientId, out PlayerController player)) return;
 
-        player.OnPlayerRespawn?.Invoke();
         player.SetPlayerPositionServer(position);
     }
 
@@ -159,7 +158,9 @@ public class PlayerController : NetworkBehaviour
     [ObserversRpc]
     private void SetPlayerPositionObserver(Vector3 position)
     {
+        OnPlayerRespawn?.Invoke();
         transform.position = position;
+
     }
 
     private void TimeManager_OnTick()

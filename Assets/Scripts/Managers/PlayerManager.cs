@@ -24,17 +24,6 @@ public class PlayerManager : NetworkBehaviour
         instance = this;
     }
 
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-
-        if (!IsServerInitialized)
-        {
-            this.enabled = false;
-            return;
-        }
-    }
-
     private void Update()
     {
         for (int i = 0; i < _deadPlayers.Count; i++)
