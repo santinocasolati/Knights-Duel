@@ -20,9 +20,6 @@ public class PlayerController : NetworkBehaviour
     public GameObject cameraPrefab;
     public GameObject hpBarPrefab;
 
-    [Header("Other Settings")]
-    public int playerLayerIndex;
-
     // Using Events and a separate class to divide the responsabilities of each class
     [Header("Events")]
     public UnityEvent<Vector2> OnMovementChanged;
@@ -57,9 +54,6 @@ public class PlayerController : NetworkBehaviour
             playerCamera = camera.transform.Find("Target");
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
-
-            // Setting the Player layer only to the owner to not be detected by the Sword and damage yourself
-            gameObject.layer = playerLayerIndex;
         } else
         {
             Instantiate(hpBarPrefab, transform);

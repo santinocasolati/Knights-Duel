@@ -1,9 +1,11 @@
 using FishNet.Component.Animating;
+using FishNet.Connection;
+using FishNet.Object;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerAnimationsController : MonoBehaviour
+public class PlayerAnimationsController : NetworkBehaviour
 {
     [Header("Sword Settings")]
     [SerializeField] private Collider swordCollider;
@@ -16,7 +18,12 @@ public class PlayerAnimationsController : MonoBehaviour
     private void Start()
     {
         animator = GetComponent<Animator>();
+        networkAnimator = GetComponent<NetworkAnimator>();
     }
+
+    // Using NetworkAnimator to set the triggers because, as they are setted and unsetted in a frame, the networkAnimator does not reach to update the triggers
+    // Primitive values are setted in the normal animator because they are updated correctly
+    // The owners are the only ones updating the triggers. The ServerRpc and ObserverRpc are for hearing the SFX in both clients
 
     public void SetMoveDirection(Vector2 direction)
     {
@@ -27,8 +34,6 @@ public class PlayerAnimationsController : MonoBehaviour
 
     public void PerformJump()
     {
-        // Using NetworkAnimator to set the triggers because, as they are setted and unsetted in a frame, the networkAnimator does not reach to update the triggers
-        // Primitive values are setted in the normal animator because they are updated correctly
         networkAnimator.SetTrigger("Jump");
     }
 
@@ -45,18 +50,54 @@ public class PlayerAnimationsController : MonoBehaviour
         if (isAttacking) return;
         swordController.ResetAttack();
         networkAnimator.SetTrigger("Attack");
+        AttackServer();
+    }
+
+    [ServerRpc]
+    private void AttackServer()
+    {
+        AttackObserver();
+    }
+
+    [ObserversRpc]
+    private void AttackObserver()
+    {
         AudioManager.instance.PlaySound("sword");
     }
 
     public void PlayerHitted()
     {
         networkAnimator.SetTrigger("Hit");
+        PlayerHittedServer();
+    }
+
+    [ServerRpc]
+    private void PlayerHittedServer()
+    {
+        PlayerHittedObserver();
+    }
+
+    [ObserversRpc]
+    private void PlayerHittedObserver()
+    {
         AudioManager.instance.PlaySound("hit");
     }
 
     public void PlayerKilled()
     {
         networkAnimator.SetTrigger("Death");
+        PlayerKilledServer();
+    }
+
+    [ServerRpc]
+    private void PlayerKilledServer()
+    {
+        PlayerKilledObserver();
+    }
+
+    [ObserversRpc]
+    private void PlayerKilledObserver()
+    {
         AudioManager.instance.PlaySound("death");
     }
 }
