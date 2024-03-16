@@ -1,3 +1,4 @@
+using FishNet.Component.Animating;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,7 @@ public class PlayerAnimationsController : MonoBehaviour
     [SerializeField] private SwordController swordController;
 
     private Animator animator;
+    private NetworkAnimator networkAnimator;
     private bool isAttacking = false;
 
     private void Start()
@@ -25,7 +27,9 @@ public class PlayerAnimationsController : MonoBehaviour
 
     public void PerformJump()
     {
-        animator.SetTrigger("Jump");
+        // Using NetworkAnimator to set the triggers because, as they are setted and unsetted in a frame, the networkAnimator does not reach to update the triggers
+        // Primitive values are setted in the normal animator because they are updated correctly
+        networkAnimator.SetTrigger("Jump");
     }
 
     public void SetAttackState(bool state)
@@ -40,19 +44,19 @@ public class PlayerAnimationsController : MonoBehaviour
         // If the trigger is setted when its on the attack state the animation performs twice
         if (isAttacking) return;
         swordController.ResetAttack();
-        animator.SetTrigger("Attack");
+        networkAnimator.SetTrigger("Attack");
         AudioManager.instance.PlaySound("sword");
     }
 
     public void PlayerHitted()
     {
-        animator.SetTrigger("Hit");
+        networkAnimator.SetTrigger("Hit");
         AudioManager.instance.PlaySound("hit");
     }
 
     public void PlayerKilled()
     {
-        animator.SetTrigger("Death");
+        networkAnimator.SetTrigger("Death");
         AudioManager.instance.PlaySound("death");
     }
 }
