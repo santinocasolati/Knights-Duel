@@ -75,7 +75,7 @@ public class PlayerAnimationsController : NetworkBehaviour
     [ObserversRpc]
     private void AttackObserver()
     {
-        AudioManager.instance.PlaySound("sword");
+        AudioManager.PlaySound("sword");
     }
 
     public void PlayerHitted()
@@ -93,7 +93,7 @@ public class PlayerAnimationsController : NetworkBehaviour
     [ObserversRpc]
     private void PlayerHittedObserver()
     {
-        AudioManager.instance.PlaySound("hit");
+        AudioManager.PlaySound("hit");
     }
 
     public void PlayerKilled(int killer)
@@ -110,7 +110,7 @@ public class PlayerAnimationsController : NetworkBehaviour
     [ObserversRpc]
     private void PlayerKilledObserver(int id, int killer)
     {
-        AudioManager.instance.PlaySound("death");
+        AudioManager.PlaySound("death");
         PlayerController.TogglePlayer(id, false);
         PlayerManager.PlayerDied(base.OwnerId, killer);
     }

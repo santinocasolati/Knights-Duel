@@ -260,7 +260,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 3595834567552007396}
   _networkObjectCache: {fileID: 3595834567552007396}
-  maxHP: 5
+  maxHP: 10
   OnPlayerDamaged:
     m_PersistentCalls:
       m_Calls:

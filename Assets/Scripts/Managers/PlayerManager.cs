@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 public class PlayerManager : NetworkBehaviour
 {
-    private static PlayerManager instance;
+    private static PlayerManager _instance;
 
     [SerializeField] private float respawnTime = 3f;
     [SerializeField] private List<Transform> spawnPoints;
@@ -16,13 +16,13 @@ public class PlayerManager : NetworkBehaviour
 
     private void Awake()
     {
-        if (instance != null)
+        if (_instance != null)
         {
             Destroy(this);
             return;
         }
 
-        instance = this;
+        _instance = this;
     }
 
     private void Update()
@@ -46,27 +46,27 @@ public class PlayerManager : NetworkBehaviour
 
     public static void InitializeNewPlayer(int clientId)
     {
-        instance._players.Add(clientId, new Player());
+        _instance._players.Add(clientId, new Player());
     }
 
     public static void DeletePlayer(int clientId)
     {
-        instance._players.Remove(clientId);
+        _instance._players.Remove(clientId);
     }
 
     public static void PlayerDied(int player, int killer)
     {
-        if (instance._players.TryGetValue(killer, out Player killerPlayer))
+        if (_instance._players.TryGetValue(killer, out Player killerPlayer))
         {
             killerPlayer.score++;
             // Sending the score to the GameManager to check win conditions
             GameManager.CheckScore(killer, killerPlayer.score);
         }
 
-        if (instance._players.TryGetValue(player, out Player deadPlayer)) deadPlayer.deathTime = Time.time;
+        if (_instance._players.TryGetValue(player, out Player deadPlayer)) deadPlayer.deathTime = Time.time;
 
         // By adding dead players to a list, the Update method can loop them and check if the death cooldown has passed
-        instance._deadPlayers.Add(player);
+        _instance._deadPlayers.Add(player);
     }
 }
 

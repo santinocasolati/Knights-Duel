@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    public static AudioManager instance;
+    private static AudioManager _instance;
 
     public List<Audio> audioStore;
 
@@ -13,9 +13,9 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance == null)
+        if (_instance == null)
         {
-            instance = this;
+            _instance = this;
             DontDestroyOnLoad(gameObject);
         }
         else
@@ -26,14 +26,15 @@ public class AudioManager : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
     }
 
-    public void PlaySound(string audio)
+    public static void PlaySound(string audio)
     {
-        Audio selectedAudio = audioStore.FirstOrDefault(a => a.name == audio);
+        // By using only one AudioSource, the general performance is improved
+        Audio selectedAudio = _instance.audioStore.FirstOrDefault(a => a.name == audio);
 
         if (selectedAudio == null) return;
 
-        audioSource.clip = selectedAudio.clip;
-        audioSource.PlayOneShot(selectedAudio.clip);
+        _instance.audioSource.clip = selectedAudio.clip;
+        _instance.audioSource.PlayOneShot(selectedAudio.clip);
     }
 }
 
