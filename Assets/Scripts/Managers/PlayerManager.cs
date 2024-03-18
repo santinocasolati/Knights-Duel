@@ -2,6 +2,7 @@ using FishNet.Object;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerManager : NetworkBehaviour
 {
@@ -55,16 +56,22 @@ public class PlayerManager : NetworkBehaviour
 
     public static void PlayerDied(int player, int killer)
     {
-        if (instance._players.TryGetValue(killer, out Player killerPlayer)) killerPlayer.score++;
+        if (instance._players.TryGetValue(killer, out Player killerPlayer))
+        {
+            killerPlayer.score++;
+            // Sending the score to the GameManager to check win conditions
+            GameManager.CheckScore(killer, killerPlayer.score);
+        }
 
         if (instance._players.TryGetValue(player, out Player deadPlayer)) deadPlayer.deathTime = Time.time;
 
+        // By adding dead players to a list, the Update method can loop them and check if the death cooldown has passed
         instance._deadPlayers.Add(player);
     }
+}
 
-    private class Player
-    {
-        public int score = 0;
-        public float deathTime = -99;
-    }
+public class Player
+{
+    public int score = 0;
+    public float deathTime = -99;
 }

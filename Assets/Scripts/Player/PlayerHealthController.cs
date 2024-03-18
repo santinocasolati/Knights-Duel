@@ -12,7 +12,7 @@ public class PlayerHealthController : NetworkBehaviour
     [SerializeField] private int maxHP = 10;
 
     public UnityEvent OnPlayerDamaged;
-    public UnityEvent OnPlayerKilled;
+    public UnityEvent<int> OnPlayerKilled;
     public UnityEvent<int> OnPlayerHealthModified;
 
     [SyncVar(OnChange = nameof(UpdateHPBar))]private int currentHP;
@@ -60,8 +60,7 @@ public class PlayerHealthController : NetworkBehaviour
 
         if (hp == 0)
         {
-            OnPlayerKilled?.Invoke();
-            PlayerManager.PlayerDied(base.OwnerId, attackerId);
+            OnPlayerKilled?.Invoke(attackerId);
         }
         else
         {

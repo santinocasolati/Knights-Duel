@@ -4,6 +4,7 @@ using FishNet.Object.Prediction;
 using FishNet.Transporting;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -109,6 +110,10 @@ public class PlayerController : NetworkBehaviour
         PlayerManager.DeletePlayer(base.OwnerId);
     }
 
+    public static PlayerController GetClientPlayer()
+    {
+        return Players.Values.FirstOrDefault(player => player.IsOwner);
+    }
 
     public static void TogglePlayer(int clientId, bool toggle)
     {
@@ -160,7 +165,6 @@ public class PlayerController : NetworkBehaviour
     {
         OnPlayerRespawn?.Invoke();
         transform.position = position;
-
     }
 
     private void TimeManager_OnTick()
